@@ -1,0 +1,52 @@
+# 📝 Rappel des Commandes Git — Projet ELE795-PFE-2025 EchoPlay
+
+## 📌 Initialisation et configuration (à faire une seule fois)
+
+# 1. Configurer votre identité
+git config --global user.name "VotreNom"
+git config --global user.email "votre@email.com"
+
+# 2. Générer une clé SSH (si non faite)
+ssh-keygen -t ed25519 -C "votre@email.com"
+
+# 3. Ajouter la clé SSH à GitHub
+#   ➤ https://github.com/settings/ssh/new
+
+# 4. Marquer la branche actuelle comme 'main'
+git branch -M main
+
+# 5. Ajouter le dépôt distant (si ce n'est pas déjà fait)
+git remote add origin git@github.com:OddyTD/ELE795-PFE-EchoPlay-2025.git
+
+## 🚀 Commandes courantes
+
+# Cloner le projet (à faire une seule fois)
+git clone git@github.com:OddyTD/ELE795-PFE-EchoPlay-2025.git
+
+# Vérifier l'état du projet
+git status
+
+# Ajouter les fichiers modifiés à l'index
+git add .
+
+# Valider les changements localement
+git commit -m "Message clair sur les modifications"
+
+# Envoyer les modifications sur GitHub
+git push origin main
+
+# Récupérer les dernières modifications depuis GitHub
+git pull origin main
+
+## 👥 Collaborateurs
+
+# Ajouter un collaborateur depuis GitHub
+# ➤ Aller dans le repo > Settings > Collaborators > Invite
+
+## 🧹 Nettoyage
+
+# Supprimer un remote s'il existe en double
+git remote remove origin
+
+# Lister les remotes existants
+git remote -v
