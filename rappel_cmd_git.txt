@@ -33,10 +33,10 @@ git add .
 git commit -m "Message clair sur les modifications"
 
 # Envoyer les modifications sur GitHub
-git push origin main
+git push
 
 # Récupérer les dernières modifications depuis GitHub
-git pull origin main
+git pull
 
 ## 👥 Collaborateurs
 
