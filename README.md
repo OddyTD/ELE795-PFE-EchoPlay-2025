@@ -13,8 +13,6 @@
 
 ## 📊 Statistiques GitHub
 
-![Stats](https://github-readme-stats.vercel.app/api?username=OddyTD&show_icons=true&theme=default)
-
 ![Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=OddyTD&repo=ELE795-PFE-EchoPlay-2025&layout=compact)
 
 ---
