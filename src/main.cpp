@@ -89,7 +89,7 @@ void setup()
 
     if (resultat == "Defaite") {
         tft.fillScreen(TFT_BLACK);
-        tft.drawString("BUSTED", tft.width() / 2, tft.height() / 2);
+        tft.drawString("BRULE", tft.width() / 2, tft.height() / 2);
     } else if (resultat == "Blackjack") {
         tft.fillScreen(TFT_GOLD); // Couleur dorée
         tft.drawString("BLACKJACK", tft.width() / 2, tft.height() / 2);
@@ -97,10 +97,13 @@ void setup()
         tft.fillScreen(TFT_DARKGREY);
         tft.drawString(resultat, tft.width() / 2, tft.height() / 2);
     } 
-  
+    
+    // Change l'état à "Terminé" et affiche le bouton Rejouer
+    menuBas.definirEtat(EtatPartie::Terminee);
     menuBas.afficherBoutonRejouer(tft); });
 
-  // Affiche le menu en attente
+  // Change l'état à "Attente de connexion" et affiche l'écran de connexion
+  menuBas.definirEtat(EtatPartie::AttenteConnexion);
   menuBas.afficherEcranConnexion(tft, wsClient.estPret());
 }
 
@@ -167,6 +170,7 @@ void loop()
       Serial.println("[ESP32] 🔁 Nouvelle partie demandée");
 
       mainJoueur.reinitialiser(tft);
+      menuBas.setMise(1); // 🔁 Réinitialiser la mise ici
       menuBas.afficherEcranConnexion(tft, wsClient.estPret());
       menuBas.definirEtat(EtatPartie::AttenteConnexion); // 🟡 En attente de nouveau départ
 
@@ -176,7 +180,14 @@ void loop()
       wsClient.envoyer(doc);
     }
 
+    else if (action == ActionMenu::AugmenterMise || action == ActionMenu::DiminuerMise)
+    {
+      // 🔁 Rafraîchir uniquement le contrôle de mise
+      menuBas.afficherMise(tft);
+    }
+
     delay(200); // Anti-rebond simple
   }
 }
+
 

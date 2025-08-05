@@ -21,7 +21,6 @@ class Joueur:
       self.a_termine = False
       self.veut_rejouer = False  # On remet à False une fois la nouvelle partie commencée
 
-
     def a_atteint_limite(self):
         return len(self.main) >= 12
 

@@ -9,7 +9,9 @@ enum class ActionMenu
   Draw,
   Stand,
   Connexion,
-  Rejouer
+  Rejouer,
+  AugmenterMise,
+  DiminuerMise
 };
 
 enum class EtatPartie {
@@ -22,6 +24,14 @@ class Menu
 {
 public:
   Menu();
+
+  int getMise() const { return miseActuelle; }
+  int getMiseMax() const { return miseMaximale; }
+  void setMise(int nouvelleMise) { miseActuelle = nouvelleMise; }
+
+
+  void afficherMise(LGFX &tft);
+
   void afficherActions(LGFX &tft);
   void afficherEcranConnexion(LGFX &tft, bool estConnecte);
   void definirEtat(EtatPartie nouvelEtat);
@@ -39,6 +49,11 @@ private:
   LGFX_Button btnRester;
   LGFX_Button btnConnexion;
   LGFX_Button btnRejouer;
+  LGFX_Button btnMisePlus;
+  LGFX_Button btnMiseMoins;
+  
+  int miseActuelle = 1;
+  int miseMaximale = 100;
 
   EtatPartie etat = EtatPartie::AttenteConnexion;
 

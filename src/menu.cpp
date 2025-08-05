@@ -64,13 +64,56 @@ void Menu::afficherMessageTemporaire(LGFX &tft, const String &message)
   tft.drawString(message, screenWidth / 2, screenHeight - 30);
 }
 
+void Menu::afficherMise(LGFX &tft)
+{
+  int screenWidth = tft.width();
+
+  const int yMise = tft.height() - H_MENU - 50;
+  const int r = 25;
+  const int centreX = screenWidth / 2;
+
+  // Position des boutons
+  int xMoins = centreX - r - 80;
+  int xPlus = centreX + r + 80;
+
+  btnMiseMoins.initButton<uint16_t>(
+      &tft, xMoins, yMise,
+      r * 2, r * 2,
+      COULEUR_CONTOUR, TFT_RED, COULEUR_TEXTE,
+      "-", TAILLE_TEXTE_GRAND, TAILLE_TEXTE_GRAND);
+  btnMisePlus.initButton<uint16_t>(
+      &tft, xPlus, yMise,
+      r * 2, r * 2,
+      COULEUR_CONTOUR, TFT_GREEN, COULEUR_TEXTE,
+      "+", TAILLE_TEXTE_GRAND, TAILLE_TEXTE_GRAND);
+
+  btnMiseMoins.drawButton();
+  btnMisePlus.drawButton();
+
+  // Affichage de la mise au centre (style bouton non interactif)
+  const int largeur = L_BTN_ACTION;
+  const int hauteur = H_BTN_ACTION;
+  const int x = centreX - largeur / 2;
+  const int y = yMise - hauteur / 2;
+
+  // Rectangle noir avec contour (même style que les boutons)
+  tft.fillRoundRect(x, y, largeur, hauteur, 8, TFT_BLACK);
+  tft.drawRoundRect(x, y, largeur, hauteur, 8, COULEUR_CONTOUR);
+
+  // Texte centré
+  tft.setTextSize(TAILLE_TEXTE_GRAND);
+  tft.setTextDatum(middle_center);
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.drawNumber(miseActuelle, centreX, yMise);
+}
+
 void Menu::afficherActions(LGFX &tft)
 {
   int largeur = tft.width();
   int hauteur = tft.height();
 
   const int espacement = 20;
-  const int yCentre = hauteur - H_BTN_ACTION / 2 - 10;
+  const int yCentre = hauteur - H_BTN_ACTION / 2 - 30;
   const int largeurTotale = 2 * L_BTN_ACTION + espacement;
   const int xDebut = (largeur - largeurTotale) / 2;
 
@@ -91,48 +134,71 @@ void Menu::afficherActions(LGFX &tft)
       COULEUR_CONTOUR, COULEUR_RESTER, COULEUR_TEXTE,
       "Rester", TAILLE_TEXTE_MOYEN, TAILLE_TEXTE_MOYEN);
   btnRester.drawButton();
+
+  afficherMise(tft);
 }
 
 ActionMenu Menu::gererAction(LGFX &tft, int tx, int ty)
 {
-  if (btnConnexion.contains(tx, ty))
+  switch (etat)
   {
-    btnConnexion.press(true);
-    btnConnexion.drawButton(true);
-    delay(100);
-    btnConnexion.press(false);
-    btnConnexion.drawButton();
-    return ActionMenu::Connexion;
-  }
+    case EtatPartie::AttenteConnexion:
+      if (btnConnexion.contains(tx, ty))
+      {
+        btnConnexion.press(true);
+        btnConnexion.drawButton(true);
+        delay(100);
+        btnConnexion.press(false);
+        btnConnexion.drawButton();
+        return ActionMenu::Connexion;
+      }
+      break;
 
-  if (btnTirer.contains(tx, ty))
-  {
-    btnTirer.press(true);
-    btnTirer.drawButton(true);
-    delay(100);
-    btnTirer.press(false);
-    btnTirer.drawButton();
-    return ActionMenu::Draw;
-  }
+    case EtatPartie::EnCours:
+      if (btnTirer.contains(tx, ty))
+      {
+        btnTirer.press(true);
+        btnTirer.drawButton(true);
+        delay(100);
+        btnTirer.press(false);
+        btnTirer.drawButton();
+        return ActionMenu::Draw;
+      }
 
-  if (btnRester.contains(tx, ty))
-  {
-    btnRester.press(true);
-    btnRester.drawButton(true);
-    delay(100);
-    btnRester.press(false);
-    btnRester.drawButton();
-    return ActionMenu::Stand;
-  }
+      if (btnRester.contains(tx, ty))
+      {
+        btnRester.press(true);
+        btnRester.drawButton(true);
+        delay(100);
+        btnRester.press(false);
+        btnRester.drawButton();
+        return ActionMenu::Stand;
+      }
 
-  if (btnRejouer.contains(tx, ty))
-  {
-    btnRejouer.press(true);
-    btnRejouer.drawButton(true);
-    delay(100);
-    btnRejouer.press(false);
-    btnRejouer.drawButton();
-    return ActionMenu::Rejouer;
+      if (btnMiseMoins.contains(tx, ty))
+      {
+        if (miseActuelle > 1) miseActuelle--;
+        return ActionMenu::DiminuerMise;
+      }
+
+      if (btnMisePlus.contains(tx, ty))
+      {
+        if (miseActuelle < miseMaximale) miseActuelle++;
+        return ActionMenu::AugmenterMise;
+      }
+      break;
+
+    case EtatPartie::Terminee:
+      if (btnRejouer.contains(tx, ty))
+      {
+        btnRejouer.press(true);
+        btnRejouer.drawButton(true);
+        delay(100);
+        btnRejouer.press(false);
+        btnRejouer.drawButton();
+        return ActionMenu::Rejouer;
+      }
+      break;
   }
 
   return ActionMenu::Rien;

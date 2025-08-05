@@ -40,7 +40,7 @@ class SessionBlackjack:
         """Réinitialise la session et le paquet"""
         for joueur in self.joueurs.values():
             joueur.reinitialiser()
-            paquet.reinitialiser()
+        paquet.reinitialiser()
     
     def joueur_veut_rejouer(self, websocket):
       joueur = self.joueurs.get(websocket)
