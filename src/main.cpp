@@ -1,13 +1,14 @@
 #include <vector>
 #include <WiFi.h>
 #include <WebSocketsClient.h>
-#include "sd_config.hpp"
 #include "LGFX_ESP32.hpp"
 #include "gestion_cartes.hpp"
 #include "menu.hpp"
 #include "audio.hpp"
 #include "wifi_credentials.hpp"
 #include "websocket_client.hpp"
+
+#include "hardware.hpp"
 
 WebSocketsClient webSocket;
 const char *WEBSOCKET_HOST = "192.168.1.58"; // PC
@@ -19,6 +20,8 @@ MainJoueur mainJoueur;
 Menu menuBas;
 WebSocketClient wsClient;
 
+HardwareInit Hardware;
+
 unsigned long dernierRefresh = 0;
 const unsigned long intervalleRefresh = 500;
 String resultatPartie = "";
@@ -26,10 +29,8 @@ String resultatPartie = "";
 void setup()
 {
   Serial.begin(115200);
-  tft.begin();                   // Initialisation de l'écran
-  tft.setRotation(1);            // écran en mode paysage
-  tft.setBrightness(255);        // Rétroéclairage à pleine luminosité
-  tft.fillScreen(TFT_DARKGREEN); // Fond vert foncé
+
+  Hardware.initEcran(tft);
 
   // pinMode(PIN_AUDIO, OUTPUT);
   // digitalWrite(PIN_AUDIO, LOW);
