@@ -1,5 +1,4 @@
 #include "hardware.hpp"
-#include "gestion_reseau.hpp"
 
 void HardwareInit::initEcran(LGFX &tft)
 {

@@ -1,7 +1,9 @@
 #pragma once
-#include "LGFX_ESP32.hpp"
 #include <SD.h>
 #include <WiFi.h>
+
+#include "LGFX_ESP32.hpp"
+#include "gestion_reseau.hpp"
 
 /**********************************************************
  *  Classe : HardwareInit                                   *
