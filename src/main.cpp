@@ -1,11 +1,9 @@
 #include <vector>
-#include <WiFi.h>
 #include <WebSocketsClient.h>
 #include "LGFX_ESP32.hpp"
 #include "gestion_cartes.hpp"
 #include "menu.hpp"
 #include "audio.hpp"
-#include "wifi_credentials.hpp"
 #include "websocket_client.hpp"
 
 #include "hardware.hpp"
@@ -30,32 +28,13 @@ void setup()
 {
   Serial.begin(115200);
 
+  // Initialisation de l'écran, de la carte SD et du Wi-Fi
   Hardware.initEcran(tft);
+  Hardware.initCarteSD();
+  Hardware.initWiFi();
 
   // pinMode(PIN_AUDIO, OUTPUT);
   // digitalWrite(PIN_AUDIO, LOW);
-
-  // Initialisation de la carte SD
-  if (!SDCardConfig::begin())
-  {
-    Serial.println("[Erreur] Carte SD non détectée");
-  }
-  else
-  {
-    Serial.println("[OK] Carte SD initialisée");
-  }
-
-  // Initialisation du WiFi
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connecting to WiFi");
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("\nWiFi connected.");
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());
 
   // 🔌 Connexion WebSocket automatique
   wsClient.demarrer(WEBSOCKET_HOST, WEBSOCKET_PORT);
