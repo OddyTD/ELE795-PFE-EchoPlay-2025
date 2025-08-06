@@ -10,7 +10,7 @@
 // 🔌 Connexion WebSocket
 // ========================================================
 
-void WebSocket::demarrer(const char *host, uint16_t port)
+void WebSocket::demarrer()
 {
   if (socket.isConnected())
   {
@@ -18,7 +18,7 @@ void WebSocket::demarrer(const char *host, uint16_t port)
     return;
   }
 
-  socket.begin(host, port, "/");
+  socket.begin(WEBSOCKET_HOST, WEBSOCKET_PORT, "/");
   socket.onEvent([this](WStype_t type, uint8_t *payload, size_t length)
                  { this->onEvent(type, payload, length); });
 }

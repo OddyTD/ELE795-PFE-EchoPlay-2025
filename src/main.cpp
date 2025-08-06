@@ -5,17 +5,13 @@
 #include "menu.hpp"
 #include "audio.hpp"
 
-#include "websocket.hpp"
 #include "hardware.hpp"
-
-const char *WEBSOCKET_HOST = "192.168.1.58"; // PC
-const uint16_t WEBSOCKET_PORT = 8765;
+#include "websocket.hpp"
 
 LGFX tft;
 MainJoueur mainJoueur;
 Menu menuBas;
 WebSocket wsClient;
-
 HardwareInit Hardware;
 
 unsigned long dernierRefresh = 0;
@@ -35,7 +31,7 @@ void setup()
   // digitalWrite(PIN_AUDIO, LOW);
 
   // Démarrer la connexion WebSocket et configurer les callbacks
-  wsClient.demarrer(WEBSOCKET_HOST, WEBSOCKET_PORT);
+  wsClient.demarrer();
   wsClient.callbackLogiqueJeu(mainJoueur, menuBas, tft);
 
   // Change l'état à "Attente de connexion" et affiche l'écran de connexion

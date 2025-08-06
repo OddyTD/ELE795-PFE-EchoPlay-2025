@@ -1,5 +1,5 @@
 #include "hardware.hpp"
-#include "wifi_credentials.hpp"
+#include "gestion_reseau.hpp"
 
 void HardwareInit::initEcran(LGFX &tft)
 {
