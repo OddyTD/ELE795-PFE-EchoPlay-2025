@@ -6,4 +6,4 @@
 .vscode/ipch/
 
 # Sensitive files (DO NOT COMMIT)
-include/wifi_credentials.hpp
+include/secrets.hpp

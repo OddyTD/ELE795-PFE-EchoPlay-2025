@@ -1,4 +1,5 @@
 #include "hardware.hpp"
+#include "secrets.hpp"
 
 void HardwareInit::initEcran(LGFX &tft)
 {

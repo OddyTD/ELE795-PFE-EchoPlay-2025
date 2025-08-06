@@ -1,10 +1,18 @@
 #pragma once
 #include <cstdint>  // Pour uint16_t, int32_t, etc.
 
-// Informations de connexion Wi-Fi
-constexpr char* WIFI_SSID     = "No Internet";       // Remplacez par votre SSID Wi-Fi
-constexpr const char* WIFI_PASSWORD = "22239698";    // Remplacez par votre mot de passe Wi-Fi
+#include "LGFX_ESP32.hpp"
+#include "websocket.hpp"
+#include "menu.hpp"
 
-// Informations de connexion WebSocket
-constexpr const char* WEBSOCKET_HOST = "192.168.1.58"; // PC
-constexpr uint16_t    WEBSOCKET_PORT = 8765;
+// Classe EtatReseau : gère l'affichage de l'état de connexion 
+class EtatReseau {
+public:
+  EtatReseau();
+
+  void mettreAJour(LGFX& tft, WebSocket& wsClient, Menu& menu);
+
+private:
+  unsigned long derniereActualisation = 0;
+  static constexpr unsigned long intervalleActualisation = 500;
+};

@@ -5,6 +5,7 @@
 #include "websocket.hpp"
 #include "gestion_cartes.hpp"
 #include "menu.hpp"
+#include "secrets.hpp"
 
 // ========================================================
 // 🔌 Connexion WebSocket

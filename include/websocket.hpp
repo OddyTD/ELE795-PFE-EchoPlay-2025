@@ -5,8 +5,6 @@
 #include <functional> // Pour std::function
 #include <ArduinoJson.h>
 
-#include "gestion_reseau.hpp"
-
 // Forward declarations pour éviter les dépendances complètes des fichiers d'en-tête LGFX_ESP32.hpp, gestion_cartes.hpp et menu.hpp
 class MainJoueur;
 class Menu;

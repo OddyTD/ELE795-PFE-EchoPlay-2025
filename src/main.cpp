@@ -13,6 +13,7 @@ MainJoueur mainJoueur;
 Menu menuBas;
 WebSocket wsClient;
 HardwareInit Hardware;
+EtatReseau IndicateurConnexion;
 
 unsigned long dernierRefresh = 0;
 const unsigned long intervalleRefresh = 500;
@@ -43,13 +44,7 @@ void loop()
 {
   wsClient.actualiser();
 
-  unsigned long maintenant = millis();
-  if (!wsClient.estPret() && maintenant - dernierRefresh > intervalleRefresh)
-  {
-    bool wifiOK = (WiFi.status() == WL_CONNECTED);
-    menuBas.rafraichirEtatConnexion(tft, wifiOK);
-    dernierRefresh = maintenant;
-  }
+  IndicateurConnexion.mettreAJour(tft, wsClient, menuBas); 
 
   int tx, ty;
   if (tft.getTouch(&tx, &ty))
