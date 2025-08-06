@@ -4,19 +4,17 @@
 #include "gestion_cartes.hpp"
 #include "menu.hpp"
 #include "audio.hpp"
-#include "websocket_client.hpp"
 
+#include "websocket.hpp"
 #include "hardware.hpp"
 
-WebSocketsClient webSocket;
 const char *WEBSOCKET_HOST = "192.168.1.58"; // PC
-// const char* WEBSOCKET_HOST = "192.168.1.27";  // Laptop
 const uint16_t WEBSOCKET_PORT = 8765;
 
 LGFX tft;
 MainJoueur mainJoueur;
 Menu menuBas;
-WebSocketClient wsClient;
+WebSocket wsClient;
 
 HardwareInit Hardware;
 
@@ -36,51 +34,9 @@ void setup()
   // pinMode(PIN_AUDIO, OUTPUT);
   // digitalWrite(PIN_AUDIO, LOW);
 
-  // 🔌 Connexion WebSocket automatique
+  // Démarrer la connexion WebSocket et configurer les callbacks
   wsClient.demarrer(WEBSOCKET_HOST, WEBSOCKET_PORT);
-
-  // Enregistrer les callbacks
-  wsClient.onMainInitiale([&](std::vector<int> indices)
-                          {
-    //Serial.println("[ESP32] 📥 Main initiale reçue");
-    mainJoueur.initialiser(indices);
-    mainJoueur.afficher(tft); });
-
-  wsClient.onCarteRecue([&](std::vector<int> indices)
-                        {
-    //Serial.println("[ESP32] 🃏 Carte(s) tirée(s) reçue(s)");
-    size_t debut = mainJoueur.taille();   // Nombre de cartes avant ajout
-    mainJoueur.ajouter(indices);          // Ajoute et repositionne toute la main
-
-    // Affiche seulement les nouvelles cartes (pas de flash)
-    for (size_t i = debut; i < mainJoueur.taille(); ++i) {
-        Carte& c = mainJoueur.getCarte(i);
-        tft.fillRect(c.getPosX() - 2, c.getPosY() - 2,
-                     LARGEUR_CARTE + 4, HAUTEUR_CARTE + 4, TFT_DARKGREEN);
-        c.afficher(tft);
-    } });
-
-  wsClient.onFinPartie([](const String &resultat)
-                       {
-
-    tft.setTextSize(5);
-    tft.setTextDatum(middle_center); // Centre le texte
-    tft.setTextColor(TFT_WHITE);
-
-    if (resultat == "Defaite") {
-        tft.fillScreen(TFT_BLACK);
-        tft.drawString("BRULE", tft.width() / 2, tft.height() / 2);
-    } else if (resultat == "Blackjack") {
-        tft.fillScreen(TFT_GOLD); // Couleur dorée
-        tft.drawString("BLACKJACK", tft.width() / 2, tft.height() / 2);
-    } else {
-        tft.fillScreen(TFT_DARKGREY);
-        tft.drawString(resultat, tft.width() / 2, tft.height() / 2);
-    } 
-    
-    // Change l'état à "Terminé" et affiche le bouton Rejouer
-    menuBas.definirEtat(EtatPartie::Terminee);
-    menuBas.afficherBoutonRejouer(tft); });
+  wsClient.callbackLogiqueJeu(mainJoueur, menuBas, tft);
 
   // Change l'état à "Attente de connexion" et affiche l'écran de connexion
   menuBas.definirEtat(EtatPartie::AttenteConnexion);
@@ -89,11 +45,9 @@ void setup()
 
 void loop()
 {
-  wsClient.actualiser(); // 🔄 Gère les événements WebSocket
+  wsClient.actualiser();
 
   unsigned long maintenant = millis();
-
-  // 🔄 Rafraîchit l’état de l’indicateur Wi-Fi toutes les secondes (avant connexion WebSocket)
   if (!wsClient.estPret() && maintenant - dernierRefresh > intervalleRefresh)
   {
     bool wifiOK = (WiFi.status() == WL_CONNECTED);
@@ -101,14 +55,14 @@ void loop()
     dernierRefresh = maintenant;
   }
 
-  // 👆 Gestion du tactile
   int tx, ty;
   if (tft.getTouch(&tx, &ty))
   {
     ActionMenu action = menuBas.gererAction(tft, tx, ty);
 
-    // ⛔ Bloque toute action sauf Rejouer si la partie est terminée
-    if (menuBas.obtenirEtat() == EtatPartie::Terminee && action != ActionMenu::Rejouer) {
+    // Ne permet que Rejouer si la partie est terminée
+    if (menuBas.obtenirEtat() == EtatPartie::Terminee && action != ActionMenu::Rejouer)
+    {
       return;
     }
 
@@ -118,11 +72,10 @@ void loop()
       {
         Serial.println("[ESP32] ✅ Joueur prêt");
 
-        wsClient.envoyerPret(); // Envoie le message {"action": "pret"}
-
+        wsClient.envoyerAction(ActionWebSocket::Pret);
         tft.fillScreen(TFT_DARKGREEN);
         menuBas.afficherActions(tft);
-        menuBas.definirEtat(EtatPartie::EnCours); // 🟢 La partie démarre
+        menuBas.definirEtat(EtatPartie::EnCours);
       }
       else
       {
@@ -135,9 +88,7 @@ void loop()
 
     else if (action == ActionMenu::Draw && wsClient.estPret())
     {
-      StaticJsonDocument<64> doc;
-      doc["action"] = "tirer_carte";
-      wsClient.envoyer(doc);
+      wsClient.envoyerAction(ActionWebSocket::TirerCarte);
     }
 
     else if (action == ActionMenu::Stand && wsClient.estPret())
@@ -150,24 +101,18 @@ void loop()
       Serial.println("[ESP32] 🔁 Nouvelle partie demandée");
 
       mainJoueur.reinitialiser(tft);
-      menuBas.setMise(1); // 🔁 Réinitialiser la mise ici
+      menuBas.setMise(1);
       menuBas.afficherEcranConnexion(tft, wsClient.estPret());
-      menuBas.definirEtat(EtatPartie::AttenteConnexion); // 🟡 En attente de nouveau départ
+      menuBas.definirEtat(EtatPartie::AttenteConnexion);
 
-      // 🔌 Envoie un message au serveur
-      StaticJsonDocument<64> doc;
-      doc["action"] = "rejouer";
-      wsClient.envoyer(doc);
+      wsClient.envoyerAction(ActionWebSocket::Rejouer);
     }
 
     else if (action == ActionMenu::AugmenterMise || action == ActionMenu::DiminuerMise)
     {
-      // 🔁 Rafraîchir uniquement le contrôle de mise
       menuBas.afficherMise(tft);
     }
 
-    delay(200); // Anti-rebond simple
+    delay(200); // Anti-rebond
   }
 }
-
-
