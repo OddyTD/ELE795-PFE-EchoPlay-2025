@@ -4,11 +4,14 @@
 EtatReseau::EtatReseau() {}
 
 void EtatReseau::mettreAJour(LGFX& tft, WebSocket& wsClient, Menu& menu) {
-  unsigned long maintenant = millis();
+  if (menu.obtenirEtat() != EtatPartie::AttenteConnexion) return;
 
-  if (!wsClient.estPret() && maintenant - derniereActualisation > intervalleActualisation) {
+  unsigned long maintenant = millis();
+  if (maintenant - derniereActualisation > intervalleActualisation) {
     bool wifiOK = (WiFi.status() == WL_CONNECTED);
-    menu.rafraichirEtatConnexion(tft, wifiOK);
+    bool wsOK = wsClient.estPret();
+
+    menu.EtatConnexion(wifiOK, wsOK);
     derniereActualisation = maintenant;
   }
 }

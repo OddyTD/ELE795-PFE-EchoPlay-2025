@@ -23,28 +23,55 @@ enum class EtatPartie {
 class Menu
 {
 public:
-  Menu();
+  Menu(LGFX &tft);
+
+  int getHauteurMenu() const { return hauteurMenu; }
 
   int getMise() const { return miseActuelle; }
   int getMiseMax() const { return miseMaximale; }
   void setMise(int nouvelleMise) { miseActuelle = nouvelleMise; }
 
-
-  void afficherMise(LGFX &tft);
-
-  void afficherActions(LGFX &tft);
-  void afficherEcranConnexion(LGFX &tft, bool estConnecte);
+  void EcranConnexion(bool estConnecte);
+  void LogosConnexion();
+  void EtatConnexion(bool wifiOK, bool wsOK);
   void definirEtat(EtatPartie nouvelEtat);
-  void afficherBoutonRejouer(LGFX& tft);
-  void rafraichirEtatConnexion(LGFX& tft, bool estConnecte);
-  void afficherMessageTemporaire(LGFX& tft, const String& message);
+  void afficherActions();
+  void afficherMise();
+  void afficherBoutonRejouer();
+  void afficherMessage(const String& message);
 
-  ActionMenu gererAction(LGFX &tft, int tx, int ty);
+  ActionMenu gererAction(int tx, int ty);
   EtatPartie obtenirEtat() const;
 
-  inline static constexpr int H_MENU = 80;
-
 private:
+  LGFX& tft;
+
+  int hauteurMenu;
+  int largeurBtnAction;
+  int hauteurBtnAction;
+  int largeurBtnConnexion;
+  int hauteurBtnConnexion; 
+  int rayonIndicateurConnexion;
+  int largeurLogoWifi;
+  int hauteurLogoWifi;
+  int largeurLogoWS;
+  int hauteurLogoWS;
+
+  uint16_t couleurTexte;
+  uint16_t couleurBtnContour;
+  uint16_t couleurBtnConnexion;
+  uint16_t couleurBtnRejouer;
+  uint16_t couleurBtnTirer;
+  uint16_t couleurBtnRester;
+  uint16_t couleurBtnMisePlus;
+  uint16_t couleurBtnMiseMoins;
+
+  float texteTP;
+  float texteP;
+  float texteM;
+  float texteG;
+  float texteTG;
+
   LGFX_Button btnTirer;
   LGFX_Button btnRester;
   LGFX_Button btnConnexion;
@@ -56,25 +83,150 @@ private:
   int miseMaximale = 100;
 
   EtatPartie etat = EtatPartie::AttenteConnexion;
-
-  inline static constexpr int L_BTN_ACTION = 140;
-  inline static constexpr int H_BTN_ACTION = 60;
-
-  inline static constexpr int L_BTN_CONNEXION = 180;
-  inline static constexpr int H_BTN_CONNEXION = 70;
-
-  inline static constexpr uint16_t COULEUR_TEXTE = TFT_WHITE;
-  inline static constexpr uint16_t COULEUR_CONTOUR = TFT_BLACK;
-  inline static constexpr uint16_t COULEUR_CONNEXION = TFT_DARKGREEN;
-  inline static constexpr uint16_t COULEUR_REJOUER = TFT_BLUE;
-  inline static constexpr uint16_t COULEUR_TIRER = TFT_BLUE;
-  inline static constexpr uint16_t COULEUR_RESTER = TFT_RED;
-
-  inline static constexpr float TAILLE_TEXTE_TRES_PETIT = 1.0F;
-  inline static constexpr float TAILLE_TEXTE_PETIT = 1.5F;
-  inline static constexpr float TAILLE_TEXTE_MOYEN = 2.0F;
-  inline static constexpr float TAILLE_TEXTE_GRAND = 2.5F;
-  inline static constexpr float TAILLE_TEXTE_TRES_GRAND = 3.0F;
-
-  inline static constexpr int RAYON_INDICATEUR_CONNEXION = 10;
 };
+
+/*
+#pragma once
+
+#include "LGFX_ESP32.hpp"
+#include "lgfx/v1/LGFX_Button.hpp"
+
+enum class ActionMenu
+{
+  Rien,
+  Draw,
+  Stand,
+  Connexion,
+  Rejouer,
+  AugmenterMise,
+  DiminuerMise
+};
+
+enum class EtatPartie
+{
+  AttenteConnexion,
+  EnCours,
+  Terminee
+};
+
+class Bouton
+{
+public:
+    Bouton(LGFX &tft);
+
+    void definir(int x, int y, int w, int h,
+                 uint16_t contour, uint16_t fond, uint16_t texte,
+                 const char* label,
+                 float tailleTexteX,
+                 float tailleTexteY);
+
+    void dessiner();
+    bool contient(int tx, int ty) const;
+    void appuyer();
+    void relacher();
+
+private:
+    LGFX &tft;
+    LGFX_Button bouton;
+};
+
+class Menu
+{
+public:
+  Menu(LGFX &tft);
+  void InitAffichage();
+
+  int getHauteurMenu() const { return hauteurMenu; }
+
+  int getMise() const { return miseActuelle; }
+  int getMiseMax() const { return miseMaximale; }
+  void setMise(int nouvelleMise) { miseActuelle = nouvelleMise; }
+
+  void EcranConnexion(bool estConnecte);
+  void LogosConnexion();
+  void EtatConnexion(bool wifiOK, bool wsOK);
+  void definirEtat(EtatPartie nouvelEtat);
+  void afficherActions();
+  void afficherMise();
+  void afficherBoutonRejouer();
+  void afficherMessage(const String& message);
+
+  ActionMenu gererAction(int tx, int ty);
+  EtatPartie obtenirEtat() const;
+
+private:
+  LGFX& tft;
+
+  int screenWidth;
+  int screenHeight;
+
+  int centreX,centreY;
+  int basY, hautY;
+  int gaucheX, droiteX;
+
+  int hauteurMenu;
+
+  int largeurBtnConnexion;
+  int hauteurBtnConnexion; 
+  int rayonIndicateurConnexion;
+  int largeurLogoWifi;
+  int hauteurLogoWifi;
+  int largeurLogoWS;
+  int hauteurLogoWS;
+  int xLogoConnexion;
+  int yLogoWifi;
+  int yLogoWS;
+  int xCercleConnexion;
+  int yCercleWifi;
+  int yCercleWS;
+
+  int espaceBtnMise;
+  int rayonBtnMise;
+  int diametreBtnMise;
+  int largeurAffichageMise;
+  int hauteurAffichageMise;
+  int largeurTotaleMise;
+  int xDebutMise;
+  int xBtnMiseMoins, xBtnMisePlus;
+  int xAffichageMise;
+  int yMise;
+  int xRectMise;
+  int yRectMise;
+
+  int xBtnAction, yBtnAction;
+  int espaceBtnAction;
+  int largeurBtnAction;
+  int hauteurBtnAction;
+  int rayonBtnAction;
+  
+  int largeurBtnRejouer;
+  int hauteurBtnRejouer; 
+
+  uint16_t couleurTexte;
+  uint16_t couleurBtnContour;
+  uint16_t couleurBtnConnexion;
+  uint16_t couleurBtnRejouer;
+  uint16_t couleurBtnTirer;
+  uint16_t couleurBtnRester;
+  uint16_t couleurBtnMisePlus;
+  uint16_t couleurBtnMiseMoins;
+
+  float texteTP;
+  float texteP;
+  float texteM;
+  float texteG;
+  float texteTG;
+
+  Bouton btnConnexion;
+  Bouton btnMisePlus;
+  Bouton btnMiseMoins;
+  Bouton btnTirer;
+  Bouton btnRester;
+  Bouton btnRejouer;
+  
+  int miseActuelle = 1;
+  int miseMaximale = 100;
+
+  EtatPartie etat = EtatPartie::AttenteConnexion;
+};
+*/

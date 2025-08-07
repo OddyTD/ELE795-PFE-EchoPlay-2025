@@ -11,7 +11,7 @@
  *    Classe utilitaire pour initialiser le matériel       *
  *    (écran, carte SD, WiFi)                              *
  **********************************************************/
-class HardwareInit
+class HardwareConfig
 {
 private:
   // --- Broches SPI utilisées pour la carte SD ---
@@ -22,11 +22,11 @@ private:
 
 public:
   // Initialise l'écran tactile avec les paramètres par défaut
-  static void initEcran(LGFX &tft);
+  static void ConfigEcran(LGFX &tft);
 
   // Initialise la carte SD pour le stockage des ressources
-  static bool initCarteSD();
+  static bool ConfigCarteSD();
 
   // Établit la connexion WiFi avec les identifiants configurés
-  static void initWiFi();
+  static void ConfigWiFi();
 };

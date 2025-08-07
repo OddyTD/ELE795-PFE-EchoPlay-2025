@@ -1,7 +1,7 @@
 #include "hardware.hpp"
 #include "secrets.hpp"
 
-void HardwareInit::initEcran(LGFX &tft)
+void HardwareConfig::ConfigEcran(LGFX &tft)
 {
   tft.begin();
   tft.setRotation(1);
@@ -9,7 +9,7 @@ void HardwareInit::initEcran(LGFX &tft)
   // tft.fillScreen(TFT_DARKGREEN);
 }
 
-bool HardwareInit::initCarteSD()
+bool HardwareConfig::ConfigCarteSD()
 {
   // Initialise le bus SPI partagé avec l'écran
   SPI.begin(PIN_SCLK, PIN_MISO, PIN_MOSI);
@@ -23,7 +23,7 @@ bool HardwareInit::initCarteSD()
   return true;
 }
 
-void HardwareInit::initWiFi()
+void HardwareConfig::ConfigWiFi()
 {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connexion WiFi en cours");
