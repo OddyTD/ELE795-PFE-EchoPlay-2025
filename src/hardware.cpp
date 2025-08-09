@@ -1,12 +1,15 @@
 #include "hardware.hpp"
-#include "secrets.hpp"
 
-void HardwareConfig::ConfigEcran(LGFX &tft)
+
+HardwareConfig::HardwareConfig(LGFX& tft) :
+  tft(tft)
+{}
+
+void HardwareConfig::ConfigEcran()
 {
   tft.begin();
   tft.setRotation(1);
   tft.setBrightness(255);
-  // tft.fillScreen(TFT_DARKGREEN);
 }
 
 bool HardwareConfig::ConfigCarteSD()
@@ -23,16 +26,18 @@ bool HardwareConfig::ConfigCarteSD()
   return true;
 }
 
-void HardwareConfig::ConfigWiFi()
+void HardwareConfig::ConfigWiFi(const char* ssid, const char* password)
 {
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
   Serial.print("Connexion WiFi en cours");
 
-  while (WiFi.status() != WL_CONNECTED)
-  {
+  unsigned long start = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - start < 5000) {
     delay(500);
     Serial.print(".");
   }
+  Serial.println();
 
   Serial.println("\nWiFi connecté.");
   Serial.print("Adresse IP: ");

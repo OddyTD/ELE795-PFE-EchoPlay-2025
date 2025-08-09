@@ -29,7 +29,7 @@ public:
   void actualiser();
 
   // Vérifie si le client est prêt (connecté)
-  bool estPret() { return socket.isConnected(); }
+  bool estPret() { return ws.isConnected(); }
 
   // Envoie une action au serveur
   void envoyerAction(ActionWebSocket action);
@@ -46,7 +46,7 @@ public:
   void onFinPartie(std::function<void(const String &resultat)> cb);
 
 private:
-  WebSocketsClient socket;
+  WebSocketsClient ws;
 
   // Callbacks pour les événements WebSocket
   std::function<void(std::vector<int>)> cbMainInitiale;
