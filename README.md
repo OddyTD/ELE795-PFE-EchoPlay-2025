@@ -93,12 +93,14 @@
 ---
 
 ## 🧠 Architecture
+```text
 ESP32
 ├── LovyanGFX (affichage écran)
 ├── GT911 (tactile capacitif)
 ├── Carte SD (JPEG des cartes)
 ├── WebSocketClient ↔️ server.py
 └── Interface en C++ : gestion_cartes, boîte_dialogue, websocket_client
+```
 
 ---
 

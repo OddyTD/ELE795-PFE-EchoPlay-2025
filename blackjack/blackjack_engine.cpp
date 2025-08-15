@@ -173,6 +173,10 @@ struct Player {
     double stack = 1000.0;
     double baseBet = 10.0;
     bool active = true; // permet de "désactiver" un siège
+
+    Player(std::string n, DecisionFn f, double s = 1000.0, double b = 10.0, bool a = true)
+        : name(std::move(n)), decide(std::move(f)), stack(s), baseBet(b), active(a) {}
+    Player() = default;
 };
 
 // ================================ Moteur Blackjack ================================
@@ -184,7 +188,7 @@ public:
 
     bool addPlayer(const std::string& name, DecisionFn fn, double stack = 1000.0, double baseBet = 10.0) {
         if (m_players.size() >= 4) return false; // max 4 joueurs
-        m_players.push_back(Player{name, std::move(fn), stack, baseBet, true});
+        m_players.emplace_back(name, std::move(fn), stack, baseBet, true);
         return true;
     }
 
